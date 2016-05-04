@@ -27,15 +27,59 @@ class Reservations extends CI_Controller {
             $this->load->view('form/connexion');
             $this->load->view('templates/footer');
         }
+        /* Gère la verification des identifiants et la création des SESSION */
         public function sucessConnexion(){
+            /* Recuperation des données de SESSION */
             $_SESSION['login']=$_POST['Identifiant'];
             $_SESSION['mdp']=$_POST['mdp'];
             $_SESSION['id']=$this->Reservations_modele->getIdUtilByLogin($_POST['Identifiant']);
-            $data['checkAuthentification']=$this->Reservations_modele->checkAuthentification($_POST['Identifiant'],$_POST['mdp']);
+            $data['checkAuthentification']=$this->Reservations_modele->checkAuthentification($_POST['Identifiant'],$_POST['mdp']);//Appel de la méthode permettant de verifier si les identifiants correspondent à un utilisateur répertorier dans la base de donnée
             $this->load->view('templates/header',$data);
             $this->load->view('form/sucessConnexion',$data);
             $this->load->view('templates/footer',$data);
         }
+        /* appel la vue contenant le formulaire d'inscription */
+        public function inscription(){
+            $this->load->view('templates/header');
+            $this->load->view('form/inscription');
+            $this->load->view('templates/footer');
+        }
+        /* récupère le resultat de la requpête d'inscription puis renvoie sur la page de succès ou d'echec de l'inscription en fonction du resultat */
+        public function sucessInscription(){
+            if($this->Reservations_modele->checkLogin($_POST['identifiant'])== true){//On vérifie que le login n'est pas déja pris.
+                $data['inscription']=$this->Reservations_modele->inscription($_POST['nom'],$_POST['prenom'],$_POST['identifiant'],$_POST['mdp']);
+            }    
+            else {
+                $data['inscription']=0;
+            }
+            $this->load->view('templates/header',$data);
+            $this->load->view("form/sucessInscription",$data);
+            $this->load->view('templates/footer',$data);
+            
+        }
+        /* Méthode affectant null à toute les variable de la session et renvoyant au formulaire de connexion, permet donc la deconnexion  */
+        public function deconnexion(){
+            $_SESSION['login']=null;
+            $_SESSION['mdp']=null;
+            $_SESSION['id']=null;
+            $this->load->view('templates/header');
+            $this->load->view('reservations/deconnexion');
+            $this->load->view('templates/footer');
+        }
+        public function connexion_reservation() {
+            $this->load->helper(array('form', 'url'));
+
+            $this->load->library('form_validation');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->load->view('form/myform');
+            } else {
+                $this->load->view('form/formsuccess');
+            }
+            $this->load->view('templates/header',$data);
+            $this->load->view('reservations/connexion_reservation',$data);
+            $this->load->view('templates/footer',$data);
+        }        
         public function afficher_all() {
         $data['titre'] = "Les réservations";
 
@@ -101,21 +145,7 @@ $this->load->view('templates/footer',$data);
 
 }
 
-public function connexion_reservation() {
-        $this->load->helper(array('form', 'url'));
 
-        $this->load->library('form_validation');
-
-        if ($this->form_validation->run() == FALSE) {
-            $this->load->view('form/myform');
-        } else {
-            $this->load->view('form/formsuccess');
-        }
-        $this->load->view('templates/header',$data);
-        $this->load->view('reservations/connexion_reservation',$data);
-        $this->load->view('templates/footer',$data);
-    
-    }
  
 public function form() {
         $this->load->helper('form');
@@ -166,22 +196,7 @@ public function form() {
         $this->load->view("form/sucessReservation",$data);
         $this->load->view('templates/footer',$data);
     }
-    public function inscription(){
-        $this->load->view('templates/header');
-        $this->load->view('form/inscription');
-        $this->load->view('templates/footer');
-    }
-    public function sucessInscription(){
-        $data['inscription']=$this->Reservations_modele->inscription($_POST['nom'],$_POST['prenom'],$_POST['identifiant'],$_POST['mdp']);
-        $this->load->view('templates/header',$data);
-        $this->load->view("form/sucessInscription",$data);
-        $this->load->view('templates/footer',$data);
-    }
-    public function deconnexion(){
-        $this->load->view('templates/header');
-        $this->load->view('reservations/deconnexion');
-        $this->load->view('templates/footer');
-    }
+
     public function suppressionReservation(){
         $this->load->view('templates/header');
         $this->load->view('form/suppressionReservation');

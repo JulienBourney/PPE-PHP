@@ -126,11 +126,13 @@ class Reservations_modele extends CI_Model {
         }
                 
     }
+    /* Méthode verifiant le status de l'utilisateur (normal ou admin)*/
     public function checkUser($Login){
         $query = $this->db->query("SELECT Admin FROM utilisateur WHERE Login Like '".$Login."';");
         return $query->row(); 
         
     }
+    /* Méthode permettant de récupèrer l'id utilisateur en prenant le Login en paramètre */
     public function getIdUtilByLogin($Login){
         $query = $this->db->query("SELECT idUtil FROM utilisateur WHERE Login LIKE '".$Login."';");
         $row=$query->row();
@@ -143,6 +145,18 @@ class Reservations_modele extends CI_Model {
     
         return $query;
     }
+    /* verifie si le login existe déja */
+    public function checkLogin($login){
+        $query = $this->db->query("SELECT Login FROM utilisateur WHERE Login LIKE '".$login."';");
+        $row=$query->row();
+        if($row == null){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    /* Crée un nouvelle utilisateur avec les données du formulaire d'inscription */
     public function inscription($nom,$prenom,$login,$mdp){
         $query = $this->db->query("INSERT INTO utilisateur(Nom,Prenom,Login,MdP,Admin) VALUES
             ('".$nom."','".$prenom."','".$login."','".$mdp."',0);");

@@ -6,7 +6,7 @@ if($inscription ==1){
     
 }
 else{
-    echo "Une erreur a été rencontré lors de l' inscription.";
+    echo "Une erreur a été rencontré lors de l' inscription. Ce Login est surement indisponible.";
 }
 
 ?>
